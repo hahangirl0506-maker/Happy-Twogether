@@ -141,8 +141,7 @@
         const itemsData = [
             { id: 'item_1', title: '人生四格', desc: '人生四格小卡', img: 'stand.jpg' },
             { id: 'item_2', title: '角色壓克力立牌', desc: '夏日祭典主題立牌', img: 'card.jpg' },
-            { id: 'item_3', title: '限定珍藏同人誌', desc: '全彩 40P 特典版', img: 'https://via.placeholder.com/300' },
-            { id: 'item_4', title: '紀念 Q 版鑰匙圈', desc: '雙面壓克力材質', img: 'https://via.placeholder.com/300' }
+            { id: 'item_3', title: '限定珍藏同人誌', desc: '全彩 40P 特典版', img: 'stand.jpg' }
         ];
 
         const gridContainer = document.getElementById('grid');
