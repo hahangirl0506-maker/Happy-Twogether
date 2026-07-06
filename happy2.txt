@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的周邊收集整理櫃</title>
+    <style>
+        :root {
+            --primary-color: #ff7675;
+            --bg-color: #f9f9f9;
+            --card-bg: #ffffff;
+            --text-color: #2d3436;
+        }
+
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1 {
+            margin-bottom: 30px;
+            color: var(--primary-color);
+        }
+
+        /* 周邊卡片網格佈局 */
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 25px;
+            width: 100%;
+            max-width: 1200px;
+        }
+
+        /* 單個周邊卡片樣式 */
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.2s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        /* 圖片容器：固定比例避免變形 */
+        .img-container {
+            width: 100%;
+            padding-top: 100%; /* 1:1 比例 */
+            position: relative;
+            background: #eee;
+        }
+
+        .img-container img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* 文字內容區 */
+        .content {
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+            justify-content: space-between;
+        }
+
+        .title {
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .description {
+            font-size: 0.9rem;
+            color: #636e72;
+            margin-bottom: 15px;
+            line-height: 1.4;
+        }
+
+        /* 計數器控制區 */
+        .counter-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #f1f2f6;
+            border-radius: 8px;
+            padding: 5px;
+        }
+
+        .btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            width: 32px;
+            height: 32px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.2s;
+        }
+
+        .btn:active {
+            opacity: 0.8;
+        }
+
+        .count {
+            font-size: 1.2rem;
+            font-weight: bold;
+            min-width: 40px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>✨ 我的周邊收集整理櫃 ✨</h1>
+
+    <div class="grid-container" id="grid">
+        </div>
+
+    <script>
+        // 1. 【在這裡修改你的周邊資料】
+        // id 必須唯一；img 可以放網路圖片網址，或是放在同個資料夾內的圖片路徑（例如 'images/p1.jpg'）
+        const itemsData = [
+            { id: 'item_1', title: '角色徽章 A款', desc: '2026 限定週年紀念徽章', img: 'https://via.placeholder.com/300' },
+            { id: 'item_2', title: '角色壓克力立牌', desc: '夏日祭典主題立牌', img: 'https://via.placeholder.com/300' },
+            { id: 'item_3', title: '限定珍藏同人誌', desc: '全彩 40P 特典版', img: 'https://via.placeholder.com/300' },
+            { id: 'item_4', title: '紀念 Q 版鑰匙圈', desc: '雙面壓克力材質', img: 'https://via.placeholder.com/300' }
+        ];
+
+        const gridContainer = document.getElementById('grid');
+
+        // 2. 渲染畫面與綁定事件
+        itemsData.forEach(item => {
+            // 從 LocalStorage 讀取歷史數量，如果沒有就預設為 0
+            const savedCount = localStorage.getItem(item.id) || 0;
+
+            // 建立卡片 HTML
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.innerHTML = `
+                <div class="img-container">
+                    <img src="${item.img}" alt="${item.title}">
+                </div>
+                <div class="content">
+                    <div>
+                        <div class="title">${item.title}</div>
+                        <div class="description">${item.desc}</div>
+                    </div>
+                    <div class="counter-container">
+                        <button class="btn" onclick="updateCount('${item.id}', -1)">-</button>
+                        <span class="count" id="count-${item.id}">${savedCount}</span>
+                        <button class="btn" onclick="updateCount('${item.id}', 1)">+</button>
+                    </div>
+                </div>
+            `;
+            gridContainer.appendChild(card);
+        });
+
+        // 3. 加減數量與儲存功能
+        function updateCount(id, change) {
+            const countSpan = document.getElementById(`count-${id}`);
+            let currentCount = parseInt(countSpan.innerText);
+            
+            // 計算新數量，並確保不會變成負數
+            let newCount = currentCount + change;
+            if (newCount < 0) newCount = 0;
+
+            // 更新畫面
+            countSpan.innerText = newCount;
+            // 儲存到瀏覽器的 LocalStorage
+            localStorage.setItem(id, newCount);
+        }
+    </script>
+</body>
+</html>
