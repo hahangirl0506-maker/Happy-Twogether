@@ -40,7 +40,7 @@
         /* 單個周邊卡片樣式 */
         .card {
             background: var(--card-bg);
-            border-radius: 12px;
+            border-radius: 15px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.05);
             overflow: hidden;
             display: flex;
@@ -130,7 +130,7 @@
 </head>
 <body>
 
-    <h1>✨ Happy Twogether週邊整理 ✨</h1>
+    <h1>💜 Happy Twogether週邊整理 💚</h1>
 
     <div class="grid-container" id="grid">
         </div>
@@ -139,8 +139,8 @@
         // 1. 【在這裡修改你的周邊資料】
         // id 必須唯一；img 可以放網路圖片網址，或是放在同個資料夾內的圖片路徑（例如 'images/p1.jpg'）
         const itemsData = [
-            { id: 'item_1', title: '人生四格小卡組', desc: '人生四格+小卡', img: 'stand.jpg' },
-            { id: 'item_2', title: '角色壓克力立牌', desc: '夏日祭典主題立牌', img: 'card.jpg' },
+            { id: 'item_1', title: '人生四格小卡組', desc: '人生四格+小卡', desc1: '13000', img: 'stand.jpg' },
+            { id: 'item_2', title: '插畫冊', desc: '插畫冊+特典明信片', desc1: '16000', img: 'card.jpg' },
             { id: 'item_3', title: '限定珍藏同人誌', desc: '全彩 40P 特典版', img: 'stand.jpg' }
         ];
 
@@ -162,6 +162,7 @@
                     <div>
                         <div class="title">${item.title}</div>
                         <div class="description">${item.desc}</div>
+                        <div class="description">${item.desc1}</div>
                     </div>
                     <div class="counter-container">
                         <button class="btn" onclick="updateCount('${item.id}', -1)">-</button>
