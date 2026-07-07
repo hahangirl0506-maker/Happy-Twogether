@@ -363,3 +363,150 @@
     <script>
         // ==========================================================
         // 🛠️ 【周邊資料庫設定區】：在這裡修改、新增你的收藏項目
+  // 💡 多張圖片寫法：用括號包住多個檔名，例如：imgs: ['stand.jpg', 'card.jpg']
+        // 💡 單張圖片寫法：就算只有一張也要用括號包著，例如：imgs: ['card.jpg']
+        const itemsData = [
+            { 
+                id: 'item_1', 
+                title: '人生四格收藏小卡', 
+                desc: '全新系列人生四格寫真，包含限定專用保護硬膠套。', 
+                imgs: ['stand.jpg', 'card.jpg'] // 同一個卡片支援多張圖
+            },
+            { 
+                id: 'item_2', 
+                title: '角色壓克力立牌', 
+                desc: '夏日祭典主題雙面高透明壓克力立牌，做工細緻。', 
+                imgs: ['card.jpg', 'stand.jpg'] 
+            },
+            { 
+                id: 'item_3', 
+                title: '限定珍藏同人誌畫冊', 
+                desc: '全彩 40P 特典版畫集，燙金封面與特種特白紙印刷。', 
+                imgs: ['stand.jpg'] // 單張圖片項目一樣完全支援
+            }
+        ];
+
+        const gridContainer = document.getElementById('grid');
+
+        // 生成網頁畫面的主要功能
+        itemsData.forEach(item => {
+            const savedCount = localStorage.getItem(item.id) || 0;
+            const card = document.createElement('div');
+            card.className = 'card';
+
+            // 處理多圖與單圖的輪播 HTML 邏輯
+            let carouselHTML = '';
+            if (item.imgs.length > 1) {
+                carouselHTML = `
+                    <button class="carousel-btn prev" onclick="moveCarousel('${item.id}', -1, event)">&lsaquo;</button>
+                    <button class="carousel-btn next" onclick="moveCarousel('${item.id}', 1, event)">&rsaquo;</button>
+                    <div class="carousel-track" id="track-${item.id}">
+                        ${item.imgs.map(img => `
+                            <div class="carousel-slide" onclick="openLightbox('${img.trim()}')">
+                                <img src="${img.trim()}" alt="${item.title}">
+                            </div>
+                        `).join('')}
+                    </div>
+                    <div class="carousel-dots" id="dots-${item.id}">
+                        ${item.imgs.map((_, idx) => `
+                            <span class="dot ${idx === 0 ? 'active' : ''}" onclick="setCarouselSlide('${item.id}', ${idx}, event)"></span>
+                        `).join('')}
+                    </div>
+                `;
+            } else {
+                carouselHTML = `
+                    <div class="carousel-track">
+                        <div class="carousel-slide" onclick="openLightbox('${item.imgs[0].trim()}')">
+                            <img src="${item.imgs[0].trim()}" alt="${item.title}">
+                        </div>
+                    </div>
+                `;
+            }
+
+            card.innerHTML = `
+                <div class="carousel-container">
+                    ${carouselHTML}
+                </div>
+                <div class="content">
+                    <div>
+                        <div class="title">${item.title}</div>
+                        <div class="description">${item.desc}</div>
+                    </div>
+                    <div class="counter-container">
+                        <button class="btn" onclick="updateCount('${item.id}', -1)">-</button>
+                        <span class="count" id="count-${item.id}">${savedCount}</span>
+                        <button class="btn" onclick="updateCount('${item.id}', 1)">+</button>
+                    </div>
+                </div>
+            `;
+            
+            card.dataset.currentIdx = 0; // 初始化當前圖片索引
+            gridContainer.appendChild(card);
+        });
+
+        // 1. 數量增減與 LocalStorage 紀錄
+        function updateCount(id, change) {
+            const countSpan = document.getElementById(`count-${id}`);
+            let currentCount = parseInt(countSpan.innerText);
+            let newCount = currentCount + change;
+            if (newCount < 0) newCount = 0;
+            countSpan.innerText = newCount;
+            localStorage.setItem(id, newCount);
+        }
+
+        // 2. 輪播左右移動核心邏輯
+        function moveCarousel(id, direction, event) {
+            event.stopPropagation(); // 阻止點擊箭頭時不小心觸發放大燈箱
+            const track = document.getElementById(`track-${id}`);
+            const card = track.closest('.card');
+            const item = itemsData.find(i => i.id === id);
+            let currentIdx = parseInt(card.dataset.currentIdx);
+
+            currentIdx += direction;
+            if (currentIdx < 0) currentIdx = item.imgs.length - 1;
+            if (currentIdx >= item.imgs.length) currentIdx = 0;
+
+            card.dataset.currentIdx = currentIdx;
+            updateCarouselDOM(id, currentIdx);
+        }
+
+        // 3. 點擊指示點切換圖片
+        function setCarouselSlide(id, idx, event) {
+            event.stopPropagation();
+            const track = document.getElementById(`track-${id}`);
+            const card = track.closest('.card');
+            card.dataset.currentIdx = idx;
+            updateCarouselDOM(id, idx);
+        }
+
+        // 更新圖片輪播的位置與圓點狀態
+        function updateCarouselDOM(id, idx) {
+            const track = document.getElementById(`track-${id}`);
+            track.style.transform = `translateX(-${idx * 100}%)`;
+            
+            const dotsContainer = document.getElementById(`dots-${id}`);
+            const dots = dotsContainer.querySelectorAll('.dot');
+            dots.forEach((dot, index) => {
+                if (index === idx) dot.classList.add('active');
+                else dot.classList.remove('active');
+            });
+        }
+
+        // 4. 🔍 點開大圖功能 (Lightbox)
+        function openLightbox(imgSrc) {
+            const lightbox = document.getElementById('lightbox');
+            const lightboxImg = document.getElementById('lightbox-img');
+            lightboxImg.src = imgSrc;
+            lightbox.style.display = 'flex';
+            setTimeout(() => lightbox.classList.add('active'), 10);
+        }
+
+        // 關閉大圖
+        function closeLightbox() {
+            const lightbox = document.getElementById('lightbox');
+            lightbox.classList.remove('active');
+            setTimeout(() => lightbox.style.display = 'none', 300);
+        }
+    </script>
+</body>
+</html>
