@@ -69,7 +69,7 @@
         /* 網格佈局 */
         .grid-container {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
             gap: 30px;
             width: 100%;
         }
@@ -240,7 +240,7 @@
         }
 
         .btn:hover {
-            background: #a37d75;
+            background: #638A6A;
         }
 
         .btn:active {
@@ -487,7 +487,7 @@
                             <div class="description">${item.desc}</div>  
                         </div>  
                         <div class="counter-container">  
-                            <span class="counter-label">擁有數量：</span>  
+                            <span class="counter-label">數量：</span>  
                             <div class="counter-controls">  
                                 <button class="btn" onclick="updateCount('${item.id}', -1)">-</button>  
                                 <span class="count" id="count-${item.id}">${savedCount}</span>  
